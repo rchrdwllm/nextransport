@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -13,8 +13,9 @@ import { MobileLayout } from "@/components/layout/MobileLayout";
 import { Logo } from "@/components/branding/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LocationPickerModal } from "@/components/modals/LocationPickerModal";
+import { LocationPickerModal } from "@/components/modals/location-picker-modal";
 import { mockUser } from "@/data/mockData";
+import RecommendationResultModal from "@/components/modals/recommendation-result-modal";
 
 export default function DashboardPage() {
   const [pickup, setPickup] = useState("");
@@ -27,6 +28,14 @@ export default function DashboardPage() {
   const [recommendation, setRecommendation] = useState<"wait" | "go" | null>(
     null
   );
+  const [isRecommendationModalOpen, setIsRecommendationModalOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (recommendation) {
+      setIsRecommendationModalOpen(true);
+    }
+  }, [recommendation]);
 
   const openLocationModal = (type: "pickup" | "destination") => {
     setLocationModalType(type);
@@ -47,22 +56,7 @@ export default function DashboardPage() {
     setTimeout(() => {
       setIsRecommending(false);
       setRecommendation("go");
-      // Navigate to recommendation results page
-      // router.push(
-      //   `/commute/decision?pickup=${encodeURIComponent(
-      //     pickup
-      //   )}&destination=${encodeURIComponent(destination)}`
-      // );
     }, 2000);
-
-    // if (!pickup || !destination) return;
-    // router.push(
-    //   `/commute/decision?pickup=${encodeURIComponent(
-    //     pickup
-    //   )}&destination=${encodeURIComponent(
-    //     destination
-    //   )}&rideType=${selectedRide}`
-    // );
   };
 
   return (
@@ -320,6 +314,14 @@ export default function DashboardPage() {
         onClose={() => setLocationModalOpen(false)}
         onSelect={handleLocationSelect}
         type={locationModalType}
+      />
+      <RecommendationResultModal
+        open={isRecommendationModalOpen}
+        setOpen={setIsRecommendationModalOpen}
+        recommendation={recommendation}
+        setRecommendation={setRecommendation}
+        pickup={pickup}
+        destination={destination}
       />
     </MobileLayout>
   );
