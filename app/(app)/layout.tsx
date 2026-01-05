@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <header className="flex items-center gap-3 bg-card p-4 border-border border-b">
         <Logo size="sm" showText={false} />
         <div className="relative flex-1">
@@ -18,7 +18,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </div>
       </header>
       {children}
-    </>
+    </div>
   );
 };
 

@@ -119,43 +119,43 @@ export default function ActiveRide() {
         </div>
       </header>
 
-      {/* Map View */}
-      <GoogleMap
-        center={{ lat: 14.5994, lng: 120.9842 }}
-        zoom={15}
-        markers={[
-          {
-            lat: 14.5994,
-            lng: 120.9842,
-            title: "You",
-          },
-          {
-            lat: 14.5899,
-            lng: 120.9757,
-            title: "Destination",
-          },
-          {
-            lat: 14.5951 + riderPosition.x * 0.001,
-            lng: 120.9799 + riderPosition.y * 0.001,
-            title: "Rider",
-          },
-        ]}
-        className="relative flex-1 bg-secondary"
-      />
-
-      {/* Legend - Overlay on map */}
-      <div className="bottom-4 left-4 absolute space-y-1 bg-card/90 backdrop-blur-sm px-3 py-2 rounded-xl text-xs">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary rounded-full w-3 h-3" />
-          <span>You</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm">🏍️</span>
-          <span>Rider</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="bg-accent rounded-full w-3 h-3" />
-          <span>Destination</span>
+      <div className="relative flex flex-1">
+        {/* Map View */}
+        <GoogleMap
+          center={{ lat: 14.5994, lng: 120.9842 }}
+          zoom={15}
+          markers={[
+            {
+              lat: 14.5994,
+              lng: 120.9842,
+              title: "You",
+            },
+            {
+              lat: 14.5899,
+              lng: 120.9757,
+              title: "Destination",
+            },
+            {
+              lat: 14.5951 + riderPosition.x * 0.001,
+              lng: 120.9799 + riderPosition.y * 0.001,
+              title: "Rider",
+            },
+          ]}
+          className="relative flex-1 bg-secondary"
+        />
+        <div className="bottom-4 left-4 absolute space-y-1 bg-card/90 backdrop-blur-sm px-3 py-2 rounded-xl text-xs">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary rounded-full w-3 h-3" />
+            <span>You</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">🏍️</span>
+            <span>Rider</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="bg-accent rounded-full w-3 h-3" />
+            <span>Destination</span>
+          </div>
         </div>
       </div>
 
