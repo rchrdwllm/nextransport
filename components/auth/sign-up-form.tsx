@@ -16,12 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
+import { signUp } from "@/lib/supabase";
 import Link from "next/link";
 import Image from "next/image";
 import googleSvg from "@/assets/icons/Google.svg";
 import facebookSvg from "@/assets/icons/Facebook.svg";
+import { useState } from "react";
 
 const SignUpForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
   const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -37,11 +42,26 @@ const SignUpForm = () => {
   });
   const router = useRouter();
 
-  const handleSubmit: SubmitHandler<SignUpSchema> = (data) => {
-    // [TODO] Handle Supabase sign up logic here
-    console.log({ data });
+  const handleSubmit: SubmitHandler<SignUpSchema> = async (data) => {
+    setIsLoading(true);
+    setError(null);
 
-    router.push("/dashboard");
+    try {
+      await signUp(data.email, data.password, {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        gender: data.gender,
+        age: data.age,
+        contactNo: data.contactNo,
+      });
+      
+      // Show success message and redirect
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Failed to sign up. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -52,6 +72,11 @@ const SignUpForm = () => {
           onSubmit={form.handleSubmit(handleSubmit)}
           className="flex flex-col gap-4"
         >
+          {error && (
+            <div className="bg-destructive/10 border border-destructive text-destructive text-sm p-3 rounded-md">
+              {error}
+            </div>
+          )}
           <div className="gap-4 grid grid-cols-1 sm:grid-cols-2">
             <FormField
               name="firstName"
@@ -60,6 +85,7 @@ const SignUpForm = () => {
                   <Input
                     className="text-sm"
                     placeholder="First name"
+                    disabled={isLoading}
                     {...field}
                   />
                   <FormMessage />
@@ -73,6 +99,7 @@ const SignUpForm = () => {
                   <Input
                     className="text-sm"
                     placeholder="Last name"
+                    disabled={isLoading}
                     {...field}
                   />
                   <FormMessage />
@@ -88,6 +115,7 @@ const SignUpForm = () => {
                   {...field}
                   onValueChange={field.onChange}
                   value={field.value}
+                  disabled={isLoading}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select gender" />
@@ -114,6 +142,7 @@ const SignUpForm = () => {
                   className="text-sm"
                   type="number"
                   min={0}
+                  disabled={isLoading}
                   {...field}
                 />
                 <FormMessage />
@@ -127,6 +156,7 @@ const SignUpForm = () => {
                 <Input
                   placeholder="Contact no."
                   className="text-sm"
+                  disabled={isLoading}
                   {...field}
                 />
                 <FormMessage />
@@ -141,6 +171,7 @@ const SignUpForm = () => {
                   placeholder="Email"
                   type="email"
                   className="text-sm"
+                  disabled={isLoading}
                   {...field}
                 />
                 <FormMessage />
@@ -155,6 +186,7 @@ const SignUpForm = () => {
                   placeholder="Password"
                   type="password"
                   className="text-sm"
+                  disabled={isLoading}
                   {...field}
                 />
                 <FormMessage />
@@ -169,13 +201,16 @@ const SignUpForm = () => {
                   placeholder="Confirm Password"
                   type="password"
                   className="text-sm"
+                  disabled={isLoading}
                   {...field}
                 />
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Sign up</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Signing up..." : "Sign up"}
+          </Button>
           <p className="text-muted-foreground text-sm text-center">
             Or continue with
           </p>
