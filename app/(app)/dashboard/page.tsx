@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, ChevronRight, Navigation, Loader2 } from "lucide-react";
-import { MobileLayout } from "@/components/layout/MobileLayout";
+import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
 import { LocationPickerModal } from "@/components/modals/location-picker-modal";
 import { mockUser } from "@/data/mockData";
@@ -199,7 +199,7 @@ export default function DashboardPage() {
               className="flex items-center gap-3 hover:border-primary/30 w-full h-[unset] text-left transition-colors"
               onClick={() => openLocationModal("pickup")}
             >
-              <div className="flex justify-center items-center bg-primary/10 shrink-0 rounded-lg w-10 h-10">
+              <div className="flex justify-center items-center bg-primary/10 rounded-lg w-10 h-10 shrink-0">
                 <Navigation className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
@@ -217,7 +217,7 @@ export default function DashboardPage() {
               className="flex items-center gap-3 hover:border-primary/30 w-full h-[unset] text-left transition-colors"
               onClick={() => openLocationModal("destination")}
             >
-              <div className="flex justify-center items-center bg-primary/10 shrink-0 rounded-lg w-10 h-10">
+              <div className="flex justify-center items-center bg-primary/10 rounded-lg w-10 h-10 shrink-0">
                 <MapPin className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">

@@ -11,9 +11,9 @@ import {
   Star,
   CheckCircle,
 } from "lucide-react";
-import { MobileLayout } from "@/components/layout/MobileLayout";
+import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
-import { GoogleMap } from "@/components/GoogleMap";
+import { GoogleMap } from "@/components/maps/google-map";
 import { mockRiders } from "@/data/mockData";
 import { useRouter } from "@bprogress/next";
 import { useSearchParams } from "next/navigation";
