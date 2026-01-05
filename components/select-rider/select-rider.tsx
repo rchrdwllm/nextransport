@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Star, Clock, MapPin, Bike } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "@bprogress/next";
 
 // Mock Data
 const mockRiders = [
@@ -51,6 +52,12 @@ export default function RiderSelection({
   destination,
 }: RiderSelectionProps) {
   const [selectedRider, setSelectedRider] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleBook = () => {
+    // In a real app, you'd probably send the selected rider info to the backend here
+    router.push("/active-ride");
+  };
 
   return (
     <MobileLayout className="flex flex-col">
@@ -157,7 +164,11 @@ export default function RiderSelection({
         </div>
       </div>
       <div className="right-0 bottom-0 left-0 fixed bg-background p-4 border-border border-t">
-        <Button className="w-full" disabled={!selectedRider}>
+        <Button
+          onClick={handleBook}
+          className="w-full"
+          disabled={!selectedRider}
+        >
           Book rider
         </Button>
       </div>
