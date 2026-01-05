@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { MobileLayout } from "@/components/layout/MobileLayout";
 import { Button } from "@/components/ui/button";
+import { GoogleMap } from "@/components/GoogleMap";
 import { mockRiders } from "@/data/mockData";
 import { useRouter } from "@bprogress/next";
 import { useSearchParams } from "next/navigation";
@@ -126,121 +127,42 @@ export default function ActiveRide() {
       </header>
 
       {/* Map View */}
-      <div className="relative flex-1 bg-secondary">
-        <svg
-          viewBox="0 0 100 100"
-          className="w-full h-full"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          {/* Background */}
-          <rect fill="hsl(var(--secondary))" width="100" height="100" />
+      <GoogleMap
+        center={{ lat: 14.5994, lng: 120.9842 }}
+        zoom={15}
+        markers={[
+          {
+            lat: 14.5994,
+            lng: 120.9842,
+            title: "You",
+          },
+          {
+            lat: 14.5899,
+            lng: 120.9757,
+            title: "Destination",
+          },
+          {
+            lat: 14.5951 + riderPosition.x * 0.001,
+            lng: 120.9799 + riderPosition.y * 0.001,
+            title: "Rider",
+          },
+        ]}
+        className="relative flex-1 bg-secondary"
+      />
 
-          {/* Grid */}
-          <defs>
-            <pattern
-              id="smallGrid"
-              width="5"
-              height="5"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 5 0 L 0 0 0 5"
-                fill="none"
-                stroke="hsl(var(--border))"
-                strokeWidth="0.3"
-              />
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#smallGrid)" opacity="0.5" />
-
-          {/* Roads */}
-          <path
-            d="M0 40 L100 40"
-            stroke="hsl(var(--muted-foreground))"
-            strokeWidth="3"
-            opacity="0.3"
-          />
-          <path
-            d="M50 0 L50 100"
-            stroke="hsl(var(--muted-foreground))"
-            strokeWidth="3"
-            opacity="0.3"
-          />
-          <path
-            d="M20 20 L80 80"
-            stroke="hsl(var(--muted-foreground))"
-            strokeWidth="2"
-            opacity="0.2"
-          />
-
-          {/* Route line */}
-          {status === "in_progress" && (
-            <path
-              d="M50 40 Q65 30 80 20"
-              stroke="hsl(var(--primary))"
-              strokeWidth="2"
-              strokeDasharray="3 2"
-              fill="none"
-              opacity="0.5"
-            />
-          )}
-
-          {/* Destination marker */}
-          <g transform="translate(80, 20)">
-            <circle r="4" fill="hsl(var(--accent))" />
-            <circle r="8" fill="hsl(var(--accent))" opacity="0.3" />
-          </g>
-
-          {/* User marker */}
-          <g transform="translate(50, 40)">
-            <circle r="4" fill="hsl(var(--primary))" />
-            <circle r="8" fill="hsl(var(--primary))" opacity="0.3">
-              <animate
-                attributeName="r"
-                values="8;12;8"
-                dur="2s"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="opacity"
-                values="0.3;0.1;0.3"
-                dur="2s"
-                repeatCount="indefinite"
-              />
-            </circle>
-          </g>
-
-          {/* Rider marker */}
-          <motion.g
-            animate={{ x: riderPosition.x, y: riderPosition.y }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-          >
-            <circle r="3" fill="hsl(var(--accent))" />
-            <text
-              y="-6"
-              textAnchor="middle"
-              fontSize="4"
-              fill="hsl(var(--foreground))"
-            >
-              🏍️
-            </text>
-          </motion.g>
-        </svg>
-
-        {/* Legend */}
-        <div className="bottom-4 left-4 absolute space-y-1 bg-card/90 backdrop-blur-sm px-3 py-2 rounded-xl text-xs">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary rounded-full w-3 h-3" />
-            <span>You</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm">🏍️</span>
-            <span>Rider</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-accent rounded-full w-3 h-3" />
-            <span>Destination</span>
-          </div>
+      {/* Legend - Overlay on map */}
+      <div className="bottom-4 left-4 absolute space-y-1 bg-card/90 backdrop-blur-sm px-3 py-2 rounded-xl text-xs">
+        <div className="flex items-center gap-2">
+          <div className="bg-primary rounded-full w-3 h-3" />
+          <span>You</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm">🏍️</span>
+          <span>Rider</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="bg-accent rounded-full w-3 h-3" />
+          <span>Destination</span>
         </div>
       </div>
 
