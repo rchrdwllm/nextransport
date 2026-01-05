@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Search, MapPin, Clock, ChevronRight, Navigation } from "lucide-react";
+import { Search, MapPin, ChevronRight, Navigation } from "lucide-react";
 import { MobileLayout } from "@/components/layout/MobileLayout";
 import { Logo } from "@/components/branding/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LocationPickerModal } from "@/components/modals/LocationPickerModal";
-import { rideTypes, mockUser } from "@/data/mockData";
+import { mockUser } from "@/data/mockData";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -49,16 +49,13 @@ export default function DashboardPage() {
   return (
     <MobileLayout className="flex flex-col">
       {/* Header */}
-      <header className="flex items-center gap-3 bg-card p-4 border-border border-b">
+      <header className="flex items-center gap-3 p-4 border-border border-b">
         <Logo size="sm" showText={false} />
         <div className="relative flex-1">
           <Search className="top-1/2 left-3 absolute w-5 h-5 text-muted-foreground -translate-y-1/2" />
-          <Input
-            placeholder="Search places…"
-            className="bg-secondary pl-10 border-0 h-10"
-          />
+          <Input placeholder="Search places…" className="pl-10" />
         </div>
-        <div className="flex justify-center items-center rounded-full w-10 h-10 font-bold text-primary-foreground gradient-primary">
+        <div className="flex justify-center items-center bg-secondary border border-border rounded-full w-10 h-10 font-bold text-primary">
           {mockUser.firstName[0]}
         </div>
       </header>
@@ -69,7 +66,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-4 mt-4 p-4 rounded-2xl text-primary-foreground gradient-hero"
+          className="bg-primary mx-4 mt-4 p-4 rounded-2xl text-primary-foreground"
         >
           <p className="opacity-80 text-sm">Welcome back,</p>
           <h2 className="mb-3 font-bold text-xl">{mockUser.firstName}!</h2>
@@ -86,7 +83,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </motion.div>
-
         {/* Traffic Heatmap */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -100,45 +96,45 @@ export default function DashboardPage() {
               Historical Patterns
             </span>
           </div>
-          <div className="relative bg-secondary rounded-2xl aspect-[16/9] overflow-hidden">
+          <div className="relative bg-secondary rounded-2xl aspect-video overflow-hidden">
             {/* Simulated traffic heatmap */}
             <svg viewBox="0 0 320 180" className="w-full h-full">
               {/* Background */}
-              <rect fill="hsl(var(--secondary))" width="320" height="180" />
+              <rect fill="var(--secondary)" width="320" height="180" />
 
               {/* Simplified Metro Manila roads */}
               <g opacity="0.4">
                 {/* EDSA - Heavy traffic */}
                 <path
                   d="M40 10 L40 170"
-                  stroke="hsl(var(--traffic-heavy))"
+                  stroke="var(--traffic-heavy)"
                   strokeWidth="8"
                   strokeLinecap="round"
                 />
                 {/* C5 - Moderate */}
                 <path
                   d="M120 10 L120 170"
-                  stroke="hsl(var(--traffic-moderate))"
+                  stroke="var(--traffic-moderate)"
                   strokeWidth="6"
                   strokeLinecap="round"
                 />
                 {/* SLEX - Light */}
                 <path
                   d="M200 90 L300 170"
-                  stroke="hsl(var(--traffic-light))"
+                  stroke="var(--traffic-light)"
                   strokeWidth="6"
                   strokeLinecap="round"
                 />
                 {/* Horizontal roads */}
                 <path
                   d="M10 60 L310 60"
-                  stroke="hsl(var(--traffic-moderate))"
+                  stroke="var(--traffic-moderate)"
                   strokeWidth="4"
                   strokeLinecap="round"
                 />
                 <path
                   d="M10 120 L310 120"
-                  stroke="hsl(var(--traffic-light))"
+                  stroke="var(--traffic-light)"
                   strokeWidth="4"
                   strokeLinecap="round"
                 />
@@ -149,7 +145,7 @@ export default function DashboardPage() {
                 x="45"
                 y="90"
                 fontSize="10"
-                fill="hsl(var(--foreground))"
+                fill="var(--foreground)"
                 fontWeight="600"
               >
                 EDSA
@@ -158,7 +154,7 @@ export default function DashboardPage() {
                 x="125"
                 y="90"
                 fontSize="10"
-                fill="hsl(var(--foreground))"
+                fill="var(--foreground)"
                 fontWeight="600"
               >
                 C5
@@ -167,7 +163,7 @@ export default function DashboardPage() {
                 x="240"
                 y="140"
                 fontSize="10"
-                fill="hsl(var(--foreground))"
+                fill="var(--foreground)"
                 fontWeight="600"
               >
                 SLEX
@@ -205,8 +201,9 @@ export default function DashboardPage() {
 
           <div className="space-y-3">
             {/* Pickup */}
-            <button
-              className="flex items-center gap-3 bg-card p-4 border-2 border-border hover:border-primary/30 rounded-xl w-full text-left transition-colors"
+            <Button
+              variant="outline"
+              className="flex items-center gap-3 hover:border-primary/30 w-full h-[unset] text-left transition-colors"
               onClick={() => openLocationModal("pickup")}
             >
               <div className="flex justify-center items-center bg-primary/10 rounded-lg w-10 h-10">
@@ -219,15 +216,16 @@ export default function DashboardPage() {
                 </p>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </button>
+            </Button>
 
             {/* Destination */}
-            <button
-              className="flex items-center gap-3 bg-card p-4 border-2 border-border hover:border-primary/30 rounded-xl w-full text-left transition-colors"
+            <Button
+              variant="outline"
+              className="flex items-center gap-3 hover:border-primary/30 w-full h-[unset] text-left transition-colors"
               onClick={() => openLocationModal("destination")}
             >
-              <div className="flex justify-center items-center bg-accent/20 rounded-lg w-10 h-10">
-                <MapPin className="w-5 h-5 text-accent" />
+              <div className="flex justify-center items-center bg-primary/10 rounded-lg w-10 h-10">
+                <MapPin className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
                 <p className="text-muted-foreground text-xs">Destination</p>
@@ -236,19 +234,27 @@ export default function DashboardPage() {
                 </p>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </button>
-
+            </Button>
+            <Button
+              size="lg"
+              className="w-full"
+              disabled={!pickup || !destination}
+              onClick={handlePlanCommute}
+            >
+              Get recommendation
+            </Button>
             {/* Ride Type Picker */}
-            <div className="pt-2">
+            {/* <div className="pt-2">
               <p className="mb-3 text-muted-foreground text-sm">
                 Preferred Ride
               </p>
-              <div className="flex gap-2 -mx-4 px-4 pb-2 overflow-x-auto scrollbar-hide">
+              <div className="flex flex-wrap gap-2 -mx-4 px-4 pb-2">
                 {rideTypes.map((ride) => (
-                  <button
+                  <Button
                     key={ride.id}
                     onClick={() => setSelectedRide(ride.id)}
-                    className={`flex-shrink-0 flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all min-w-[80px] ${
+                    variant="outline"
+                    className={`shrink-0 h-[unset] flex flex-col items-center gap-1 p-3 rounded-lg border transition-all min-w-20 ${
                       selectedRide === ride.id
                         ? "border-primary bg-primary/5"
                         : "border-border bg-card hover:border-primary/30"
@@ -259,15 +265,15 @@ export default function DashboardPage() {
                     <span className="text-muted-foreground text-xs">
                       ₱{ride.price}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Arrival Time */}
-            <div className="flex items-center gap-3 bg-card p-4 border-2 border-border rounded-xl">
-              <div className="flex justify-center items-center bg-secondary rounded-lg w-10 h-10">
-                <Clock className="w-5 h-5 text-muted-foreground" />
+            {/* <div className="flex items-center gap-3 bg-card shadow-xs p-4 border border-border rounded-lg">
+              <div className="flex justify-center items-center bg-primary/10 rounded-lg w-10 h-10">
+                <Clock className="w-4 h-4 text-primary" />
               </div>
               <div className="flex-1">
                 <p className="text-muted-foreground text-xs">Arrive by</p>
@@ -278,18 +284,8 @@ export default function DashboardPage() {
                   className="bg-transparent outline-none w-full font-medium text-foreground"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
-
-          {/* Plan Button */}
-          <Button
-            size="lg"
-            className="mt-6 w-full"
-            disabled={!pickup || !destination}
-            onClick={handlePlanCommute}
-          >
-            Plan Commute
-          </Button>
         </motion.div>
       </div>
 

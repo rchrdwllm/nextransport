@@ -55,7 +55,7 @@ export default function CommuteDecision({
   destination: string;
   rideType: string;
 }) {
-    const router = useRouter();
+  const router = useRouter();
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [waitingSeconds, setWaitingSeconds] = useState(0);
   const [isWaiting, setIsWaiting] = useState(false);
@@ -199,7 +199,7 @@ export default function CommuteDecision({
             Cost Comparison
           </h3>
           <div className="gap-3 grid grid-cols-2">
-            <div className="bg-primary/5 p-4 border border-primary/20 rounded-xl">
+            <div className="bg-secondary p-4 border border-primary rounded-xl">
               <div className="flex items-center gap-2 mb-2">
                 <Bus className="w-5 h-5 text-primary" />
                 <span className="font-medium text-foreground text-sm">
@@ -211,14 +211,16 @@ export default function CommuteDecision({
               </p>
               <p className="mt-1 text-muted-foreground text-xs">Jeepney fare</p>
             </div>
-            <div className="bg-accent/10 p-4 border border-accent/20 rounded-xl">
+            <div className="bg-muted p-4 border border-border rounded-xl">
               <div className="flex items-center gap-2 mb-2">
-                <Bike className="w-5 h-5 text-accent" />
+                <Bike className="w-5 h-5 text-muted-foreground" />
                 <span className="font-medium text-foreground text-sm">
                   Motor
                 </span>
               </div>
-              <p className="font-bold text-accent text-2xl">₱{rideCost}</p>
+              <p className="font-bold text-muted-foreground text-2xl">
+                ₱{rideCost}
+              </p>
               <p className="mt-1 text-muted-foreground text-xs">
                 Angkas estimate
               </p>
