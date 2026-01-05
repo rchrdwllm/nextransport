@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft,
   Phone,
   MessageCircle,
   X,
@@ -108,12 +107,6 @@ export default function ActiveRide() {
     <MobileLayout className="flex flex-col bg-background">
       {/* Header */}
       <header className="safe-top flex items-center gap-3 bg-card p-4 border-border border-b">
-        <button
-          onClick={() => setShowCancelModal(true)}
-          className="flex justify-center items-center bg-secondary rounded-full w-10 h-10"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
         <div className="flex-1">
           <h2 className="font-semibold text-foreground">
             {statusMessages[status]}

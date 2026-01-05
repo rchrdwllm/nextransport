@@ -32,9 +32,7 @@ export function LocationPickerModal({
   const [isDragging, setIsDragging] = useState(false);
   const [pinPosition, setPinPosition] = useState({ x: 50, y: 50 });
   const [showMap, setShowMap] = useState(false);
-  const [selectedLocationName, setSelectedLocationName] = useState(
-    "Near EDSA, Metro Manila"
-  );
+  const [selectedLocationName, setSelectedLocationName] = useState("");
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
   const [autocompleteInstance, setAutocompleteInstance] =
     useState<google.maps.places.Autocomplete | null>(null);
@@ -416,7 +414,7 @@ export function LocationPickerModal({
                           className="flex items-center gap-3 hover:border-primary/30 w-full h-[unset] text-left transition-colors"
                         >
                           <div className="flex justify-center items-center bg-primary/10 rounded-lg w-10 h-10">
-                            <Star className="w-5 h-5 text-primary" />
+                            <Clock className="w-5 h-5 text-primary" />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-foreground">
@@ -488,7 +486,7 @@ export function LocationPickerModal({
                 onClose();
               }}
             >
-              Clear
+              {selectedLocationName ? "Clear location" : "Cancel"}
             </Button>
           )}
         </div>
