@@ -3,11 +3,26 @@
 import { SignUpSchema, signUpSchema } from "@/form-schemas/sign-up-schema";
 import { useRouter } from "@bprogress/next";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Form, FormField, FormItem, FormMessage } from "../ui/form";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import Image from "next/image";
+import googleSvg from "@/assets/icons/Google.svg";
+import facebookSvg from "@/assets/icons/Facebook.svg";
 
 const SignUpForm = () => {
-  const form = useForm({
+  const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       firstName: "",
@@ -30,126 +45,144 @@ const SignUpForm = () => {
 
   return (
     <div className="space-y-4 w-full max-w-100 sm:max-w-125">
-      <h1 className="font-bold text-4xl text-center">NexTransport</h1>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-col gap-4"
-      >
-        <div className="gap-4 grid grid-cols-1 sm:grid-cols-2">
-          <div>
-            <input
-              type="text"
-              placeholder="First name"
-              className="block p-3 border border-teal-900/10 rounded-lg w-full"
-              {...form.register("firstName")}
-            />
-            {form.formState.errors.firstName && (
-              <p className="mt-1 text-red-600 text-sm">
-                {form.formState.errors.firstName.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <input
-              type="text"
-              placeholder="Last name"
-              className="block p-3 border border-teal-900/10 rounded-lg w-full"
-              {...form.register("lastName")}
-            />
-            {form.formState.errors.lastName && (
-              <p className="mt-1 text-red-600 text-sm">
-                {form.formState.errors.lastName.message}
-              </p>
-            )}
-          </div>
-        </div>
-        <div>
-          <div className="block p-3 px-2 border border-teal-900/10 rounded-lg">
-            <select
-              className="block w-full"
-              id="gender"
-              defaultValue="gender"
-              {...form.register("gender")}
-            >
-              <option value="gender" className="text-muted" disabled>
-                Gender
-              </option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          {form.formState.errors.gender && (
-            <p className="mt-1 text-red-600 text-sm">
-              {form.formState.errors.gender.message}
-            </p>
-          )}
-        </div>
-        <div>
-          <input
-            type="text"
-            placeholder="Contact no."
-            className="block p-3 border border-teal-900/10 rounded-lg w-full"
-            {...form.register("contactNo")}
-          />
-          {form.formState.errors.contactNo && (
-            <p className="mt-1 text-red-600 text-sm">
-              {form.formState.errors.contactNo.message}
-            </p>
-          )}
-        </div>
-        <div>
-          <input
-            type="text"
-            placeholder="Email"
-            className="block p-3 border border-teal-900/10 rounded-lg w-full"
-            {...form.register("email")}
-          />
-          {form.formState.errors.email && (
-            <p className="mt-1 text-red-600 text-sm">
-              {form.formState.errors.email.message}
-            </p>
-          )}
-        </div>
-        <div>
-          <input
-            type="password"
-            placeholder="Password"
-            className="block p-3 border border-teal-900/10 rounded-lg w-full"
-            {...form.register("password")}
-          />
-          {form.formState.errors.password && (
-            <p className="mt-1 text-red-600 text-sm">
-              {form.formState.errors.password.message}
-            </p>
-          )}
-        </div>
-        <div>
-          <input
-            type="password"
-            placeholder="Confirm password"
-            className="block p-3 border border-teal-900/10 rounded-lg w-full"
-            {...form.register("confirmPassword")}
-          />
-          {form.formState.errors.confirmPassword && (
-            <p className="mt-1 text-red-600 text-sm">
-              {form.formState.errors.confirmPassword.message}
-            </p>
-          )}
-        </div>
-        <button
-          type="submit"
-          className="block bg-primary p-3 rounded-lg text-primary-foreground cursor-pointer"
+      <h1 className="font-bold text-4xl text-center">NexTranspo</h1>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="flex flex-col gap-4"
         >
-          Sign up
-        </button>
-        <p className="text-muted text-sm text-center">
-          Already have an account?{" "}
-          <Link href="/sign-in" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </form>
+          <div className="gap-4 grid grid-cols-1 sm:grid-cols-2">
+            <FormField
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <Input
+                    className="text-sm"
+                    placeholder="First name"
+                    {...field}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <Input
+                    className="text-sm"
+                    placeholder="Last name"
+                    {...field}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div>
+            <FormField
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Gender</SelectLabel>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            name="contactNo"
+            render={({ field }) => (
+              <FormItem>
+                <Input
+                  placeholder="Contact no."
+                  className="text-sm"
+                  {...field}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <Input
+                  placeholder="Email"
+                  type="email"
+                  className="text-sm"
+                  {...field}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <Input
+                  placeholder="Password"
+                  type="password"
+                  className="text-sm"
+                  {...field}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <Input
+                  placeholder="Confirm Password"
+                  type="password"
+                  className="text-sm"
+                  {...field}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Sign up</Button>
+          <p className="text-muted-foreground text-sm text-center">
+            Or continue with
+          </p>
+          <div className="flex gap-4">
+            <Button variant="outline" className="flex-1">
+              <Image className="size-4" src={googleSvg} alt="" />
+              <span>Google</span>
+            </Button>
+            <Button variant="outline" className="flex-1">
+              <Image className="size-4" src={facebookSvg} alt="" />
+              <span>Facebook</span>
+            </Button>
+          </div>
+          <p className="text-muted-foreground text-sm text-center">
+            Already have an account?{" "}
+            <Link href="/sign-in" className="text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </form>
+      </Form>
     </div>
   );
 };
