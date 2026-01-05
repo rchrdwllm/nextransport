@@ -2,17 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Search,
-  MapPin,
-  ChevronRight,
-  Navigation,
-  Loader2,
-} from "lucide-react";
+import { MapPin, ChevronRight, Navigation, Loader2 } from "lucide-react";
 import { MobileLayout } from "@/components/layout/MobileLayout";
-import { Logo } from "@/components/branding/logo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { LocationPickerModal } from "@/components/modals/location-picker-modal";
 import { mockUser } from "@/data/mockData";
 import RecommendationResultModal from "@/components/modals/recommendation-result-modal";
@@ -61,18 +53,6 @@ export default function DashboardPage() {
 
   return (
     <MobileLayout className="flex flex-col">
-      {/* Header */}
-      <header className="flex items-center gap-3 p-4 border-border border-b">
-        <Logo size="sm" showText={false} />
-        <div className="relative flex-1">
-          <Search className="top-1/2 left-3 absolute w-5 h-5 text-muted-foreground -translate-y-1/2" />
-          <Input placeholder="Search places…" className="pl-10" />
-        </div>
-        <div className="flex justify-center items-center bg-secondary border border-border rounded-full w-10 h-10 font-bold text-primary">
-          {mockUser.firstName[0]}
-        </div>
-      </header>
-
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Profile Banner */}

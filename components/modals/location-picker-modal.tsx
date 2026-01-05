@@ -1,19 +1,19 @@
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import {
   Navigation,
   Search,
   MapPin,
   Clock,
   Star,
-  GripVertical,
   ChevronRight,
+  Loader,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { savedLocations, recentSearches } from "@/data/mockData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
+import { useGoogleMapsScript } from "@/hooks/use-google-maps-script";
 
 interface LocationPickerModalProps {
   isOpen: boolean;
@@ -32,16 +32,207 @@ export function LocationPickerModal({
   const [isDragging, setIsDragging] = useState(false);
   const [pinPosition, setPinPosition] = useState({ x: 50, y: 50 });
   const [showMap, setShowMap] = useState(false);
+  const [selectedLocationName, setSelectedLocationName] = useState(
+    "Near EDSA, Metro Manila"
+  );
+  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
+  const [autocompleteInstance, setAutocompleteInstance] =
+    useState<google.maps.places.Autocomplete | null>(null);
+  const [predictions, setPredictions] = useState<
+    google.maps.places.AutocompletePrediction[]
+  >([]);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const { isLoaded } = useGoogleMapsScript();
 
-  const handleUseCurrentLocation = () => {
-    onSelect("Current Location");
-    onClose();
+  // Get user's current location
+  const getUserLocation = () => {
+    setIsLoadingLocation(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          setIsLoadingLocation(false);
+        },
+        () => {
+          setIsLoadingLocation(false);
+          // Fallback to Metro Manila
+          setUserLocation({ lat: 14.5994, lng: 120.9842 });
+        }
+      );
+    } else {
+      setIsLoadingLocation(false);
+      // Fallback to Metro Manila
+      setUserLocation({ lat: 14.5994, lng: 120.9842 });
+    }
   };
 
-  const handleSearchSelect = (location: string) => {
-    onSelect(location);
-    onClose();
+  // Get user location when modal opens
+  useEffect(() => {
+    if (isOpen && !userLocation) {
+      getUserLocation();
+    }
+  }, [isOpen, userLocation]);
+
+  // Initialize Google Maps and Autocomplete
+  useEffect(() => {
+    if (!isLoaded || !searchInputRef.current || autocompleteInstance) return;
+
+    const service = new google.maps.places.AutocompleteService();
+    const sessionToken = new google.maps.places.AutocompleteSessionToken();
+
+    const handlePredictions = (
+      predictions: google.maps.places.AutocompletePrediction[] | null
+    ) => {
+      if (predictions) {
+        setPredictions(predictions);
+      }
+    };
+
+    const inputElement = searchInputRef.current;
+    const handleInput = () => {
+      const value = inputElement.value;
+      if (value.length > 2) {
+        service.getPlacePredictions(
+          {
+            input: value,
+            sessionToken: sessionToken,
+            componentRestrictions: { country: "ph" }, // Philippines
+          },
+          handlePredictions
+        );
+      } else {
+        setPredictions([]);
+      }
+    };
+
+    inputElement.addEventListener("input", handleInput);
+
+    return () => {
+      inputElement.removeEventListener("input", handleInput);
+    };
+  }, [isLoaded, autocompleteInstance]);
+
+  // Reset map instance when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setMapInstance(null);
+      setShowMap(false);
+    }
+  }, [isOpen]);
+
+  // Initialize Google Map when showing map
+  useEffect(() => {
+    if (!showMap || !mapRef.current || !isLoaded || !userLocation) return;
+
+    const map = new google.maps.Map(mapRef.current, {
+      zoom: 17,
+      center: userLocation,
+      disableDefaultUI: true,
+      mapTypeControl: false,
+    });
+
+    setMapInstance(map);
+
+    const marker = new google.maps.Marker({
+      position: userLocation,
+      map: map,
+      draggable: true,
+      title: "Selected Location",
+    });
+
+    const geocoder = new google.maps.Geocoder();
+
+    const updateLocationName = (location: google.maps.LatLng) => {
+      geocoder.geocode({ location }, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+          setSelectedLocationName(results[0].formatted_address);
+        }
+      });
+    };
+
+    // Initial geocoding for user location
+    updateLocationName(
+      new google.maps.LatLng(userLocation.lat, userLocation.lng)
+    );
+
+    marker.addListener("dragend", () => {
+      const position = marker.getPosition();
+      if (position) {
+        map.setCenter(position);
+        updateLocationName(position);
+      }
+    });
+
+    map.addListener("click", (e: google.maps.MapMouseEvent) => {
+      const clickedLocation = e.latLng;
+      if (clickedLocation) {
+        marker.setPosition(clickedLocation);
+        map.setCenter(clickedLocation);
+        updateLocationName(clickedLocation);
+      }
+    });
+  }, [showMap, isLoaded, userLocation]);
+
+  const handleSelectPrediction = (placeId: string) => {
+    if (!isLoaded) return;
+
+    const service = new google.maps.places.PlacesService(
+      document.createElement("div")
+    );
+
+    service.getDetails({ placeId }, (place, status) => {
+      if (
+        status === google.maps.places.PlacesServiceStatus.OK &&
+        place?.geometry?.location
+      ) {
+        if (mapInstance) {
+          mapInstance.setCenter(place.geometry.location);
+          mapInstance.setZoom(17);
+        }
+        onSelect(place.formatted_address || place.name || "");
+        onClose();
+        setPredictions([]);
+        setSearchQuery("");
+      }
+    });
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode(
+            { location: { lat: latitude, lng: longitude } },
+            (results, status) => {
+              if (
+                status === google.maps.GeocoderStatus.OK &&
+                results &&
+                results[0]
+              ) {
+                onSelect(results[0].formatted_address);
+                onClose();
+              }
+            }
+          );
+        },
+        () => {
+          onSelect("Current Location");
+          onClose();
+        }
+      );
+    } else {
+      onSelect("Current Location");
+      onClose();
+    }
   };
 
   const handleMapDrag = (e: React.MouseEvent | React.TouchEvent) => {
@@ -61,17 +252,7 @@ export function LocationPickerModal({
   };
 
   const handleConfirmPin = () => {
-    // Simulate reverse geocoding
-    const locations = [
-      "EDSA Taft, Pasay City",
-      "Ayala Avenue, Makati",
-      "BGC Central, Taguig",
-      "Quezon Avenue, QC",
-    ];
-    const randomLocation =
-      locations[Math.floor(Math.random() * locations.length)];
-
-    onSelect(randomLocation);
+    onSelect(selectedLocationName);
     onClose();
     setShowMap(false);
   };
@@ -92,7 +273,7 @@ export function LocationPickerModal({
         <DialogHeader className="px-4">
           <DialogTitle>Set pickup</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="h-[500px] overflow-x-visible">
+        <ScrollArea className="h-125 overflow-x-visible">
           <div className="p-4">
             {!showMap ? (
               <div className="space-y-4">
@@ -100,6 +281,7 @@ export function LocationPickerModal({
                 <div className="relative">
                   <Search className="top-1/2 left-3 absolute w-5 h-5 text-muted-foreground -translate-y-1/2" />
                   <Input
+                    ref={searchInputRef}
                     placeholder="Search for a place..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -107,21 +289,56 @@ export function LocationPickerModal({
                     autoFocus
                   />
                 </div>
+
+                {/* Search Predictions */}
+                {predictions.length > 0 && (
+                  <div className="space-y-2 border-b">
+                    {predictions.map((prediction) => (
+                      <Button
+                        key={prediction.place_id}
+                        variant="ghost"
+                        className="flex justify-start items-center gap-3 hover:bg-secondary px-3 py-2 w-full h-[unset] text-left transition-colors"
+                        onClick={() =>
+                          handleSelectPrediction(prediction.place_id)
+                        }
+                      >
+                        <MapPin className="w-5 h-5 text-primary shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {prediction.description}
+                          </p>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                )}
+
                 {/* Use Current Location */}
                 <Button
                   onClick={handleUseCurrentLocation}
+                  disabled={isLoadingLocation}
                   variant="outline"
-                  className="flex items-center gap-3 hover:border-primary/30 w-full h-[unset] text-left transition-colors"
+                  className="flex items-center gap-3 disabled:opacity-50 hover:border-primary/30 w-full h-[unset] text-left transition-colors"
                 >
                   <div className="flex justify-center items-center bg-primary/10 rounded-lg w-10 h-10">
-                    <Navigation className="w-5 h-5 text-primary" />
+                    {isLoadingLocation ? (
+                      <Loader className="w-5 h-5 text-primary animate-spin" />
+                    ) : (
+                      <Navigation className="w-5 h-5 text-primary" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <p className="text-muted-foreground text-xs">
                       Use Current Location
                     </p>
                     <p className="font-medium text-foreground">
-                      GPS location detected
+                      {isLoadingLocation
+                        ? "Getting location..."
+                        : userLocation
+                        ? `${userLocation.lat.toFixed(
+                            4
+                          )}, ${userLocation.lng.toFixed(4)}`
+                        : "GPS location"}
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -137,7 +354,9 @@ export function LocationPickerModal({
                   <div className="flex-1">
                     <p className="text-muted-foreground text-xs">Pick on map</p>
                     <p className="font-medium text-foreground">
-                      Drag pin to set location
+                      {userLocation
+                        ? "Drag pin or click to set location"
+                        : "Loading location..."}
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -214,105 +433,34 @@ export function LocationPickerModal({
             ) : (
               /* Map View */
               <div className="flex flex-col h-[calc(100vh-73px)]">
-                <div
-                  ref={mapRef}
-                  className="relative flex-1 bg-secondary cursor-crosshair"
-                  onMouseDown={() => setIsDragging(true)}
-                  onMouseUp={() => setIsDragging(false)}
-                  onMouseLeave={() => setIsDragging(false)}
-                  onMouseMove={handleMapDrag}
-                  onTouchStart={() => setIsDragging(true)}
-                  onTouchEnd={() => setIsDragging(false)}
-                  onTouchMove={handleMapDrag}
-                >
-                  {/* Simulated Map */}
-                  <svg
-                    viewBox="0 0 400 400"
-                    className="opacity-30 w-full h-full"
-                  >
-                    {/* Grid pattern */}
-                    <defs>
-                      <pattern
-                        id="grid"
-                        width="40"
-                        height="40"
-                        patternUnits="userSpaceOnUse"
-                      >
-                        <path
-                          d="M 40 0 L 0 0 0 40"
-                          fill="none"
-                          stroke="hsl(var(--border))"
-                          strokeWidth="1"
-                        />
-                      </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#grid)" />
+                {!isLoaded ? (
+                  <div className="flex flex-col flex-1 justify-center items-center bg-secondary">
+                    <Loader className="w-8 h-8 text-primary animate-spin" />
+                    <p className="mt-2 text-muted-foreground text-sm">
+                      Loading map...
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div
+                      ref={mapRef}
+                      className="relative flex-1 bg-secondary"
+                      style={{ minHeight: "300px" }}
+                    />
 
-                    {/* Roads */}
-                    <path
-                      d="M0 200 L400 200"
-                      stroke="hsl(var(--muted-foreground))"
-                      strokeWidth="8"
-                      opacity="0.3"
-                    />
-                    <path
-                      d="M200 0 L200 400"
-                      stroke="hsl(var(--muted-foreground))"
-                      strokeWidth="8"
-                      opacity="0.3"
-                    />
-                    <path
-                      d="M100 0 L100 400"
-                      stroke="hsl(var(--muted-foreground))"
-                      strokeWidth="4"
-                      opacity="0.2"
-                    />
-                    <path
-                      d="M300 0 L300 400"
-                      stroke="hsl(var(--muted-foreground))"
-                      strokeWidth="4"
-                      opacity="0.2"
-                    />
-                  </svg>
-
-                  {/* Draggable Pin */}
-                  <motion.div
-                    className="z-10 absolute pointer-events-none"
-                    style={{
-                      left: `${pinPosition.x}%`,
-                      top: `${pinPosition.y}%`,
-                      transform: "translate(-50%, -100%)",
-                    }}
-                    animate={{ scale: isDragging ? 1.2 : 1 }}
-                  >
-                    <div className="flex flex-col items-center">
-                      <div className="flex justify-center items-center bg-primary shadow-glow rounded-full w-10 h-10">
-                        <MapPin className="w-6 h-6 text-primary-foreground" />
+                    {/* Confirm Button */}
+                    <div className="safe-bottom bg-card p-4 border-border border-t">
+                      <div className="mb-3 text-center">
+                        <p className="text-muted-foreground text-sm">
+                          Selected location
+                        </p>
+                        <p className="font-medium text-foreground line-clamp-2">
+                          {selectedLocationName}
+                        </p>
                       </div>
-                      <div className="bg-primary shadow-lg -mt-1.5 rounded-full w-3 h-3" />
                     </div>
-                  </motion.div>
-
-                  {/* Drag hint */}
-                  <div className="top-4 left-1/2 absolute flex items-center gap-2 bg-card/90 shadow-lg backdrop-blur-sm px-4 py-2 rounded-full -translate-x-1/2">
-                    <GripVertical className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-medium text-sm">
-                      Drag to move pin
-                    </span>
-                  </div>
-                </div>
-
-                {/* Confirm Button */}
-                <div className="safe-bottom bg-card p-4 border-border border-t">
-                  <div className="mb-3 text-center">
-                    <p className="text-muted-foreground text-sm">
-                      Selected location
-                    </p>
-                    <p className="font-medium text-foreground">
-                      Near EDSA, Metro Manila
-                    </p>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
             )}
           </div>
