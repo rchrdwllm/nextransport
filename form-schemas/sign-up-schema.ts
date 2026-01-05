@@ -4,9 +4,10 @@ export const signUpSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
-    gender: z.enum(["male", "female", "other"]),
+    gender: z.enum(["male", "female", "other"], "Please select a gender"),
+    age: z.string().min(1, "Age is required"),
     contactNo: z.string().min(1, "Contact number is required"),
-    email: z.string().email("Invalid email address"),
+    email: z.email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
     confirmPassword: z
       .string()

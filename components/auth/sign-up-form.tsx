@@ -28,6 +28,7 @@ const SignUpForm = () => {
       firstName: "",
       lastName: "",
       gender: undefined,
+      age: undefined,
       contactNo: "",
       email: "",
       password: "",
@@ -79,33 +80,46 @@ const SignUpForm = () => {
               )}
             />
           </div>
-          <div>
-            <FormField
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <Select
-                    {...field}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Gender</SelectLabel>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <Select
+                  {...field}
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Gender</SelectLabel>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="age"
+            render={({ field }) => (
+              <FormItem>
+                <Input
+                  placeholder="Age"
+                  className="text-sm"
+                  type="number"
+                  min={0}
+                  {...field}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             name="contactNo"
             render={({ field }) => (
