@@ -5,9 +5,15 @@ function getUser(){
 }
 
 await supabase.auth.signUp({
-  email,
+  id,
+  firstname,
+  lastname,
   gender,
+  email,
   phonenumber,
   password
-
 })
+
+function getUserProfileId(uid){
+  return user.find(u => u.id === uid);
+}
