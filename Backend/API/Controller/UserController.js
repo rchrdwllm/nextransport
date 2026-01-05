@@ -10,7 +10,8 @@ await supabase.auth.signUp({
   lastname,
   gender,
   email,
-  phonenumber,
+  age,
+  mobilenumber,
   password
 })
 

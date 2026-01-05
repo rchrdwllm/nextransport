@@ -6,15 +6,12 @@ export function generateUserId() {
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   const dateStr = `${year}${month}${day}`;
-  
-  // Generate random 6-character alphanumeric string
+
   const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let randomStr = '';
   for (let i = 0; i < 6; i++) {
     randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  
-  // Combine parts
+    }
   return `USER-${dateStr}-${randomStr}`;
 }
 
@@ -24,8 +21,7 @@ export function generateUserId() {
 */
   
 export function isValidUserId(id) {
-  if (typeof id !== 'string') return false;
-  // Pattern: USER-YYYYMMDD-XXXXXX (where X is alphanumeric)
+    if (typeof id !== 'string') return false;
   const pattern = /^USER-\d{8}-[0-9A-Z]{6}$/;
   return pattern.test(id);
 }
