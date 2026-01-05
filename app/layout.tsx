@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import TopLoaderWrapper from "@/components/wrappers/toploader-wrapper";
 
 import "./globals.css";
@@ -11,6 +11,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
@@ -27,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${geistSans.className} antialiased min-h-screen bg-background`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${outfit.className} antialiased min-h-screen bg-background`}
       >
         <TopLoaderWrapper>{children}</TopLoaderWrapper>
       </body>
