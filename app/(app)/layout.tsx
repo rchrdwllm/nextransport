@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <>
-      <header className="flex items-center gap-3 p-4 border-border border-b">
+      <header className="flex items-center gap-3 bg-card p-4 border-border border-b">
         <Logo size="sm" showText={false} />
         <div className="relative flex-1">
           <Search className="top-1/2 left-3 absolute w-5 h-5 text-muted-foreground -translate-y-1/2" />
