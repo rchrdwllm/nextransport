@@ -26,7 +26,7 @@ import { useState } from "react";
 const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -54,7 +54,7 @@ const SignUpForm = () => {
         age: data.age,
         contactNo: data.contactNo,
       });
-      
+
       // Show success message and redirect
       router.push("/dashboard");
     } catch (err: any) {
@@ -73,7 +73,7 @@ const SignUpForm = () => {
           className="flex flex-col gap-4"
         >
           {error && (
-            <div className="bg-destructive/10 border border-destructive text-destructive text-sm p-3 rounded-md">
+            <div className="bg-destructive/10 p-3 border border-destructive rounded-md text-destructive text-sm">
               {error}
             </div>
           )}

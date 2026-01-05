@@ -17,7 +17,6 @@ import { useState } from "react";
 const SignInForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
   const form = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -35,7 +34,9 @@ const SignInForm = () => {
       await signIn(data.email, data.password);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Failed to sign in. Please check your credentials.");
+      setError(
+        err.message || "Failed to sign in. Please check your credentials."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +51,7 @@ const SignInForm = () => {
           className="flex flex-col gap-4"
         >
           {error && (
-            <div className="bg-destructive/10 border border-destructive text-destructive text-sm p-3 rounded-md">
+            <div className="bg-destructive/10 p-3 border border-destructive rounded-md text-destructive text-sm">
               {error}
             </div>
           )}

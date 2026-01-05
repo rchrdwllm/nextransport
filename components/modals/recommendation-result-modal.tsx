@@ -199,7 +199,7 @@ const RecommendationResultModal = ({
           <Button
             onClick={() => {
               router.push(
-                `/commute/decision?pickup=${encodeURIComponent(
+                `/rider?pickup=${encodeURIComponent(
                   pickup
                 )}&destination=${encodeURIComponent(destination)}`
               );
