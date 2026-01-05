@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Search, MapPin, ChevronRight, Navigation } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  ChevronRight,
+  Navigation,
+  Loader2,
+} from "lucide-react";
 import { MobileLayout } from "@/components/layout/MobileLayout";
 import { Logo } from "@/components/branding/logo";
 import { Button } from "@/components/ui/button";
@@ -12,15 +17,16 @@ import { LocationPickerModal } from "@/components/modals/LocationPickerModal";
 import { mockUser } from "@/data/mockData";
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [selectedRide, setSelectedRide] = useState("jeepney");
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
-  const [arrivalTime, setArrivalTime] = useState("");
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [locationModalType, setLocationModalType] = useState<
     "pickup" | "destination"
   >("pickup");
+  const [isRecommending, setIsRecommending] = useState(false);
+  const [recommendation, setRecommendation] = useState<"wait" | "go" | null>(
+    null
+  );
 
   const openLocationModal = (type: "pickup" | "destination") => {
     setLocationModalType(type);
@@ -35,15 +41,28 @@ export default function DashboardPage() {
     }
   };
 
-  const handlePlanCommute = () => {
-    if (!pickup || !destination) return;
-    router.push(
-      `/commute/decision?pickup=${encodeURIComponent(
-        pickup
-      )}&destination=${encodeURIComponent(
-        destination
-      )}&rideType=${selectedRide}`
-    );
+  const handleGetRecommendation = () => {
+    setIsRecommending(true);
+
+    setTimeout(() => {
+      setIsRecommending(false);
+      setRecommendation("go");
+      // Navigate to recommendation results page
+      // router.push(
+      //   `/commute/decision?pickup=${encodeURIComponent(
+      //     pickup
+      //   )}&destination=${encodeURIComponent(destination)}`
+      // );
+    }, 2000);
+
+    // if (!pickup || !destination) return;
+    // router.push(
+    //   `/commute/decision?pickup=${encodeURIComponent(
+    //     pickup
+    //   )}&destination=${encodeURIComponent(
+    //     destination
+    //   )}&rideType=${selectedRide}`
+    // );
   };
 
   return (
@@ -238,10 +257,16 @@ export default function DashboardPage() {
             <Button
               size="lg"
               className="w-full"
-              disabled={!pickup || !destination}
-              onClick={handlePlanCommute}
+              disabled={!pickup || !destination || isRecommending}
+              onClick={handleGetRecommendation}
             >
-              Get recommendation
+              {isRecommending ? (
+                <>
+                  <Loader2 className="animate-spin" /> Getting recommendation...
+                </>
+              ) : (
+                "Get recommendation"
+              )}
             </Button>
             {/* Ride Type Picker */}
             {/* <div className="pt-2">
