@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import TopLoaderWrapper from "@/components/wrappers/toploader-wrapper";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,9 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${geistSans.className} antialiased min-h-screen bg-background`}
       >
-        {children}
+        <TopLoaderWrapper>{children}</TopLoaderWrapper>
       </body>
     </html>
   );
