@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Phone,
-    MessageCircle,
-    X,
-    AlertTriangle,
-    Star,
-    CheckCircle,
+  Phone,
+  MessageCircle,
+  X,
+  AlertTriangle,
+  Star,
+  CheckCircle,
 } from "lucide-react";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,12 @@ import { mockRiders } from "@/data/mockData";
 import { useRouter } from "@bprogress/next";
 import { useSearchParams } from "next/navigation";
 import {
-    Drawer,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerDescription,
-    DrawerFooter,
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
 } from "@/components/ui/drawer";
 
 type RideStatus = "approaching" | "arrived" | "in_progress" | "completed";
@@ -287,7 +287,7 @@ export default function ActiveRide() {
               <div className="flex justify-center items-center bg-green-100 mx-auto mb-4 rounded-full w-20 h-20">
                 <CheckCircle className="w-10 h-10 text-green-600" />
               </div>
-              <DrawerTitle className="text-center text-xl">
+              <DrawerTitle className="text-xl text-center">
                 You've Arrived! 🎉
               </DrawerTitle>
               <DrawerDescription className="text-center">
@@ -299,7 +299,7 @@ export default function ActiveRide() {
               {/* App Rating */}
               <div className="mb-6">
                 <p className="mb-2 font-medium text-foreground text-sm text-center">
-                  Rate NexTransport
+                  Rate this recommendation
                 </p>
                 <div className="flex justify-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -346,11 +346,7 @@ export default function ActiveRide() {
             </div>
 
             <DrawerFooter>
-              <Button
-                size="lg"
-                className="w-full"
-                onClick={handleSubmitRating}
-              >
+              <Button size="lg" className="w-full" onClick={handleSubmitRating}>
                 Submit & Return Home
               </Button>
             </DrawerFooter>
