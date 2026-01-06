@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { LocationPickerModal } from "@/components/modals/location-picker-modal";
 import { mockUser } from "@/data/mockData";
 import RecommendationResultModal from "@/components/modals/recommendation-result-modal";
+import { useDecisionStore } from "@/zustand/use-decision-store";
+import Timer from "@/components/wait/timer";
 
 export default function DashboardPage() {
   const [pickup, setPickup] = useState("");
@@ -22,6 +24,7 @@ export default function DashboardPage() {
   );
   const [isRecommendationModalOpen, setIsRecommendationModalOpen] =
     useState(false);
+  const { decision } = useDecisionStore();
 
   useEffect(() => {
     if (recommendation) {
@@ -47,7 +50,7 @@ export default function DashboardPage() {
 
     setTimeout(() => {
       setIsRecommending(false);
-      setRecommendation("go");
+      setRecommendation("wait");
     }, 2000);
   };
 
@@ -76,6 +79,8 @@ export default function DashboardPage() {
             </div>
           </div>
         </motion.div>
+        {/* Wait timer */}
+        {decision === "wait" && <Timer />}
         {/* Traffic Heatmap */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
