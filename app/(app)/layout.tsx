@@ -1,11 +1,26 @@
 "use client";
 
-import { mockUser } from "@/data/mockData";
+import { supabase } from "@/lib/supabase";
 import { useRouter } from "@bprogress/next";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+  const [userInitial, setUserInitial] = useState<string>("");
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // Get first initial from user metadata
+      const firstName = user?.user_metadata?.firstName || user?.email;
+      setUserInitial(firstName[0].toUpperCase() || "J");
+    };
+
+    getUser();
+  }, [router]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -16,7 +31,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           className="flex justify-center items-center bg-secondary border border-border rounded-full w-10 h-10 font-bold text-primary cursor-pointer"
           onClick={() => router.push("/profile")}
         >
-          {mockUser.firstName[0]}
+          {userInitial}
         </div>
       </header>
       {children}

@@ -1,130 +1,150 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { 
-  User, MapPin, HelpCircle, Star, Users, Settings, ChevronRight, 
-  ArrowLeft, Wallet, Edit 
+import { useState, useEffect } from "react";
+import {
+  MapPin,
+  HelpCircle,
+  Star,
+  Users,
+  Settings,
+  ChevronRight,
+  ArrowLeft,
+  Edit,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { User as UserType } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 export default function UserProfile() {
   const router = useRouter();
-
-  const defaultUser = {
-    firstName: 'Juan',
-    lastName: 'Dela Cruz',
-    email: 'juan.delacruz@email.com',
-    phone: '0917****123',
-    avatar: null as string | null,
-    balance: 250.00
-  };
-
-  const [user, setUser] = useState(defaultUser);
+  const [user, setUser] = useState<UserType | null>(null);
 
   // Load user from localStorage
   useEffect(() => {
-    const savedUser = localStorage.getItem('userProfile');
-    if (savedUser) setUser(JSON.parse(savedUser));
-    else localStorage.setItem('userProfile', JSON.stringify(defaultUser));
-  }, []);
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+
+      console.log({ user });
+    };
+
+    getUser();
+  }, [router]);
 
   // Listen for updates to keep profile data in sync
   useEffect(() => {
     const handleUpdate = () => {
-      const savedUser = localStorage.getItem('userProfile');
+      const savedUser = localStorage.getItem("userProfile");
       if (savedUser) setUser(JSON.parse(savedUser));
     };
-    window.addEventListener('storage', handleUpdate);
-    window.addEventListener('profileUpdated', handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    window.addEventListener("profileUpdated", handleUpdate);
     return () => {
-      window.removeEventListener('storage', handleUpdate);
-      window.removeEventListener('profileUpdated', handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+      window.removeEventListener("profileUpdated", handleUpdate);
     };
   }, []);
 
-  const fullName = `${user.firstName} ${user.lastName}`.trim();
+  const fullName =
+    `${user?.user_metadata.firstName} ${user?.user_metadata.lastName}`.trim();
 
   const menuItems = [
-    { icon: <MapPin className="w-6 h-6 text-blue-600" />, label: "Region: Mega Manila", onClick: () => console.log("Region clicked") },
-    { icon: <HelpCircle className="w-6 h-6 text-blue-600" />, label: "Support", onClick: () => console.log("Support clicked") },
-    { icon: <Star className="w-6 h-6 text-blue-600" />, label: "Rate App", onClick: () => console.log("Rate App clicked") },
-    { icon: <Users className="w-6 h-6 text-blue-600" />, label: "Drive with NexTranspo", onClick: () => console.log("Drive clicked") },
-    { icon: <Settings className="w-6 h-6 text-blue-600" />, label: "Settings", onClick: () => console.log("Settings clicked") },
+    {
+      icon: <MapPin className="w-6 h-6 text-blue-600" />,
+      label: "Region: Mega Manila",
+      onClick: () => console.log("Region clicked"),
+    },
+    {
+      icon: <HelpCircle className="w-6 h-6 text-blue-600" />,
+      label: "Support",
+      onClick: () => console.log("Support clicked"),
+    },
+    {
+      icon: <Star className="w-6 h-6 text-blue-600" />,
+      label: "Rate App",
+      onClick: () => console.log("Rate App clicked"),
+    },
+    {
+      icon: <Users className="w-6 h-6 text-blue-600" />,
+      label: "Drive with NexTranspo",
+      onClick: () => console.log("Drive clicked"),
+    },
+    {
+      icon: <Settings className="w-6 h-6 text-blue-600" />,
+      label: "Settings",
+      onClick: () => console.log("Settings clicked"),
+    },
   ];
 
-  const handleEditProfile = () => router.push('/profile/edit');
+  const handleEditProfile = () => router.push("/profile/edit");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       {/* --- FIXED HEADER SECTION --- */}
-      <div className="bg-white px-4 py-4 sticky top-0 z-10 flex items-center border-b border-gray-100">
-        <button 
-          onClick={() => router.push('/dashboard')}
-          className="p-2 hover:bg-gray-100 rounded-full mr-4 transition-colors group"
+      <div className="top-0 z-10 sticky flex items-center bg-white px-4 py-4 border-gray-100 border-b">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="group hover:bg-gray-100 mr-4 p-2 rounded-full transition-colors"
         >
           <ArrowLeft className="w-6 h-6 text-gray-600 group-active:scale-95 transition-transform" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">Account</h1>
+        <h1 className="font-bold text-gray-900 text-2xl">Account</h1>
       </div>
 
       {/* --- PROFILE SECTION --- */}
-      <div className="bg-gray-50 px-4 py-8 flex flex-col items-center">
+      <div className="flex flex-col items-center bg-gray-50 px-4 py-8">
         <div className="relative mb-4">
-          <div className="w-44 h-44 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-4 border-white">
-            {user.avatar ? (
-              <img src={user.avatar} alt={fullName} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-emerald-50 flex items-center justify-center">
-                <span className="text-emerald-600 font-bold text-5xl">
-                  {user.firstName.charAt(0)}
-                </span>
-              </div>
-            )}
+          <div className="flex justify-center items-center bg-white shadow-lg border-4 border-white rounded-full w-44 h-44 overflow-hidden">
+            <div className="flex justify-center items-center bg-emerald-50 w-full h-full">
+              <span className="font-bold text-emerald-600 text-5xl">
+                {user?.user_metadata.firstName.charAt(0) || "J"}
+              </span>
+            </div>
           </div>
           <button
             onClick={handleEditProfile}
-            className="absolute bottom-2 right-2 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:bg-emerald-600 transition-colors"
+            className="right-2 bottom-2 absolute flex justify-center items-center bg-emerald-500 hover:bg-emerald-600 shadow-lg border-2 border-white rounded-full w-10 h-10 transition-colors"
           >
             <Edit className="w-5 h-5 text-white" />
           </button>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{fullName}</h2>
-        <p className="text-sm text-gray-500 mb-6">{user.email}</p>
-        <p className="text-sm text-gray-500 mb-4">{user.phone}</p>
+        <h2 className="mb-2 font-bold text-gray-900 text-2xl">{fullName}</h2>
+        <p className="mb-6 text-gray-500 text-sm">
+          {user?.user_metadata.email || "juandela.cruz@gmail.com"}
+        </p>
+        <p className="mb-4 text-gray-500 text-sm">
+          {user?.user_metadata.contactNo || "09994328588"}
+        </p>
         <button
           onClick={handleEditProfile}
-          className="px-12 py-3 border-2 border-emerald-600 text-emerald-600 font-bold rounded-full hover:bg-emerald-50 transition-colors"
+          className="hover:bg-emerald-50 px-12 py-3 border-2 border-emerald-600 rounded-full font-bold text-emerald-600 transition-colors"
         >
           Edit Profile
         </button>
       </div>
 
-      {/* --- WIDGETS SECTION --- */}
-      <div className="px-4 py-4">
-        <div className="bg-emerald-500 rounded-2xl p-6 shadow-md text-white">
-          <div className="flex items-center gap-2 mb-2">
-            <Wallet className="w-5 h-5" />
-            <span className="text-sm font-medium opacity-90">Current Balance</span>
-          </div>
-          <p className="text-3xl font-bold">₱{user.balance.toFixed(2)}</p>
-        </div>
-      </div>
-
       {/* --- MENU SECTION --- */}
-      <div className="px-4 pb-24 mt-4">
-        <h3 className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-3 px-2">My Account</h3>
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="mt-4 px-4 pb-24">
+        <h3 className="mb-3 px-2 font-bold text-[10px] text-gray-400 uppercase tracking-widest">
+          My Account
+        </h3>
+        <div className="bg-white shadow-sm border border-gray-100 rounded-3xl overflow-hidden">
           {menuItems.map((item, i) => (
             <button
               key={i}
               onClick={item.onClick}
-              className="w-full flex items-center justify-between px-6 py-5 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+              className="flex justify-between items-center hover:bg-gray-50 px-6 py-5 border-gray-100 border-b last:border-b-0 w-full transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
+                <div className="flex justify-center items-center bg-gray-50 rounded-xl w-10 h-10">
                   {item.icon}
                 </div>
-                <span className="text-gray-900 font-bold text-sm">{item.label}</span>
+                <span className="font-bold text-gray-900 text-sm">
+                  {item.label}
+                </span>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-300" />
             </button>

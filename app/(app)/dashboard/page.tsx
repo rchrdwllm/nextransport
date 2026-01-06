@@ -11,6 +11,9 @@ import RecommendationResultModal from "@/components/modals/recommendation-result
 import { useDecisionStore } from "@/zustand/use-decision-store";
 import Timer from "@/components/wait/timer";
 import { TrafficHeatmap } from "@/components/dashboard/traffic-heatmap";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "@bprogress/next";
+import { User } from "@supabase/supabase-js";
 
 export default function DashboardPage() {
   const [pickup, setPickup] = useState("");
@@ -26,6 +29,22 @@ export default function DashboardPage() {
   const [isRecommendationModalOpen, setIsRecommendationModalOpen] =
     useState(false);
   const { decision } = useDecisionStore();
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+
+      console.log({ user });
+    };
+
+    getUser();
+  }, [router]);
 
   useEffect(() => {
     if (recommendation) {
@@ -67,7 +86,9 @@ export default function DashboardPage() {
         >
           <div>
             <p className="opacity-80 text-sm">Welcome back,</p>
-            <h2 className="font-bold text-xl">{mockUser.firstName}!</h2>
+            <h2 className="font-bold text-xl">
+              {user?.user_metadata?.firstName || user?.email || "Juan"}!
+            </h2>
           </div>
           <div className="flex justify-between items-center">
             <div className="text-right">
