@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { generateUserId } from "@/Backend/API/Generator/UserIdGenerator";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -31,19 +32,53 @@ export async function signUp(
     contactNo: string;
   }
 ) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: metadata,
-    },
-  });
+  try {
+    // Generate unique user ID
+    const userId = generateUserId();
 
-  if (error) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          ...metadata,
+          user_id: userId,
+        },
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    // Store user profile with generated ID in the users table
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from("users")
+        .insert({
+          auth_id: data.user.id,
+          user_id: userId,
+          email: email,
+          first_name: metadata.firstName,
+          last_name: metadata.lastName,
+          gender: metadata.gender,
+          age: parseInt(metadata.age),
+          contact_no: metadata.contactNo,
+          created_at: new Date().toISOString(),
+        });
+
+      if (profileError) {
+        console.error("Error creating user profile:", profileError);
+        throw new Error(
+          "User created but failed to save profile. Please contact support."
+        );
+      }
+    }
+
+    return { ...data, userId };
+  } catch (error) {
     throw error;
   }
-
-  return data;
 }
 
 // Sign out
