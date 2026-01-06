@@ -38,7 +38,11 @@ const Timer = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="space-y-3 p-4 pb-0">
+      <div>
+        <h3 className="font-semibold">Waiting for Public Transport</h3>
+        <p className="text-muted-foreground text-sm">ETA: 6 mins</p>
+      </div>
       <div className="flex justify-between items-center bg-secondary p-4 border border-border rounded-2xl">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
