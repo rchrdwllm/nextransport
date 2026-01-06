@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Phone,
   MessageCircle,
@@ -24,6 +23,14 @@ import {
   DrawerDescription,
   DrawerFooter,
 } from "@/components/ui/drawer";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type RideStatus = "approaching" | "arrived" | "in_progress" | "completed";
 
@@ -231,53 +238,38 @@ export default function ActiveRide() {
       </div>
 
       {/* Cancel Modal */}
-      <AnimatePresence>
-        {showCancelModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="z-50 fixed inset-0 flex justify-center items-center bg-background/80 backdrop-blur-sm p-4"
-            onClick={() => setShowCancelModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card p-6 rounded-2xl w-full max-w-sm"
-              onClick={(e) => e.stopPropagation()}
+      {/* Cancel Modal */}
+      <Dialog open={showCancelModal} onOpenChange={setShowCancelModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex justify-center items-center bg-destructive/10 mx-auto mb-4 rounded-full w-16 h-16">
+              <AlertTriangle className="w-8 h-8 text-destructive" />
+            </div>
+            <DialogTitle className="text-center">Cancel Ride?</DialogTitle>
+            <DialogDescription className="text-center">
+              Are you sure you want to cancel? A cancellation fee may apply.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-3 sm:space-x-0">
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1 py-2.5"
+              onClick={() => setShowCancelModal(false)}
             >
-              <div className="flex justify-center items-center bg-destructive/10 mx-auto mb-4 rounded-full w-16 h-16">
-                <AlertTriangle className="w-8 h-8 text-destructive" />
-              </div>
-              <h3 className="mb-2 font-bold text-foreground text-lg text-center">
-                Cancel Ride?
-              </h3>
-              <p className="mb-6 text-muted-foreground text-sm text-center">
-                Are you sure you want to cancel? A cancellation fee may apply.
-              </p>
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="flex-1"
-                  onClick={() => setShowCancelModal(false)}
-                >
-                  Keep Ride
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="lg"
-                  className="flex-1"
-                  onClick={handleCancelRide}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              Keep Ride
+            </Button>
+            <Button
+              variant="destructive"
+              size="lg"
+              className="flex-1 py-2.5"
+              onClick={handleCancelRide}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Rating Drawer */}
       <Drawer
