@@ -216,7 +216,7 @@ export default function ActiveRide() {
             </Button>
           )}
 
-          {status === "approaching" && status !== "in_progress" && (
+          {(status === "approaching" || status !== "in_progress") && (
             <Button
               variant="outline"
               size="lg"
