@@ -51,20 +51,34 @@ export async function signUp(
       throw error;
     }
 
-    // Store user profile with generated ID in the users table
+    console.log({ data });
+
+    // Store user in users table and user_profiles table
     if (data.user) {
+      // First, create the user record
+      const { error: userError } = await supabase.from("users").insert({
+        id: data.user.id,
+        email: email,
+      });
+
+      if (userError) {
+        console.error("Error creating user:", userError);
+        throw new Error(
+          "User created but failed to save user record. Please contact support."
+        );
+      }
+
+      // Then, create the user profile
       const { error: profileError } = await supabase
-        .from("users")
+        .from("user_profiles")
         .insert({
-          auth_id: data.user.id,
-          user_id: userId,
-          email: email,
+          id: data.user.id,
           first_name: metadata.firstName,
           last_name: metadata.lastName,
-          gender: metadata.gender,
+          email: email,
+          mobile_number: metadata.contactNo,
+          gender: metadata.gender.charAt(0).toUpperCase() + metadata.gender.slice(1).toLowerCase(),
           age: parseInt(metadata.age),
-          contact_no: metadata.contactNo,
-          created_at: new Date().toISOString(),
         });
 
       if (profileError) {

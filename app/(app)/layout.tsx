@@ -1,11 +1,12 @@
 "use client";
 
 import { mockUser } from "@/data/mockData";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next";
 import { ReactNode } from "react";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="flex items-center gap-3 bg-card p-4 border-border border-b">
