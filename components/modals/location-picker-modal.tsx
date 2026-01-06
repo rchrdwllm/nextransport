@@ -14,6 +14,7 @@ import { savedLocations, recentSearches } from "@/data/mockData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { useGoogleMapsScript } from "@/hooks/use-google-maps-script";
+import { useLocationStore } from "@/zustand/use-location-store";
 
 interface LocationPickerModalProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ export function LocationPickerModal({
   const mapRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { isLoaded } = useGoogleMapsScript();
+  const { setLocation } = useLocationStore();
 
   // Get user's current location
   const getUserLocation = () => {
@@ -56,18 +58,25 @@ export function LocationPickerModal({
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ lat: latitude, lng: longitude });
+          setLocation(latitude, longitude);
           setIsLoadingLocation(false);
         },
         () => {
           setIsLoadingLocation(false);
           // Fallback to Metro Manila
-          setUserLocation({ lat: 14.5994, lng: 120.9842 });
+          const fallbackLat = 14.5994;
+          const fallbackLng = 120.9842;
+          setUserLocation({ lat: fallbackLat, lng: fallbackLng });
+          setLocation(fallbackLat, fallbackLng);
         }
       );
     } else {
       setIsLoadingLocation(false);
       // Fallback to Metro Manila
-      setUserLocation({ lat: 14.5994, lng: 120.9842 });
+      const fallbackLat = 14.5994;
+      const fallbackLng = 120.9842;
+      setUserLocation({ lat: fallbackLat, lng: fallbackLng });
+      setLocation(fallbackLat, fallbackLng);
     }
   };
 
@@ -207,6 +216,7 @@ export function LocationPickerModal({
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          setLocation(latitude, longitude);
           const geocoder = new google.maps.Geocoder();
           geocoder.geocode(
             { location: { lat: latitude, lng: longitude } },
@@ -334,8 +344,8 @@ export function LocationPickerModal({
                         ? "Getting location..."
                         : userLocation
                         ? `${userLocation.lat.toFixed(
-                            4
-                          )}, ${userLocation.lng.toFixed(4)}`
+                            2
+                          )}, ${userLocation.lng.toFixed(2)}`
                         : "GPS location"}
                     </p>
                   </div>

@@ -8,6 +8,7 @@ import {
   DialogDescription,
 } from "../ui/dialog";
 import { AlertCircle, Bike, Bus, Clock, TrendingUp } from "lucide-react";
+import { useDecisionStore } from "@/zustand/use-decision-store";
 
 type RecommendationResultModalProps = {
   recommendation: "wait" | "go" | null;
@@ -51,6 +52,7 @@ const RecommendationResultModal = ({
   destination,
 }: RecommendationResultModalProps) => {
   const router = useRouter();
+  const { decision, setDecision } = useDecisionStore();
 
   const {
     confidence,
@@ -67,15 +69,21 @@ const RecommendationResultModal = ({
   };
 
   const confidenceColors = {
-    high: "bg-traffic-light text-background",
-    medium: "bg-traffic-moderate text-background",
-    low: "bg-traffic-heavy text-background",
+    high: "bg-primary text-background",
+    medium: "bg-amber-500 text-background",
+    low: "bg-red-700 text-background",
   };
 
   const trafficColors = {
     light: "text-traffic-light",
     moderate: "text-traffic-moderate",
     heavy: "text-traffic-heavy",
+  };
+
+  const handleWait = () => {
+    setOpen(false);
+    setRecommendation(null);
+    setDecision("wait");
   };
 
   return (
@@ -96,7 +104,7 @@ const RecommendationResultModal = ({
               <div
                 className={`px-6 py-3 rounded-xl ${
                   recommendation === "wait"
-                    ? "bg-traffic-light text-background"
+                    ? "bg-primary text-background"
                     : "bg-accent text-accent-foreground"
                 }`}
               >
@@ -188,25 +196,40 @@ const RecommendationResultModal = ({
         <div className="flex gap-4">
           <Button
             onClick={() => {
-              setOpen(false);
-              setRecommendation(null);
+              if (recommendation === "wait") {
+                router.push(
+                  `/select-rider?pickup=${encodeURIComponent(
+                    pickup
+                  )}&destination=${encodeURIComponent(destination)}`
+                );
+              } else {
+                handleWait();
+              }
             }}
             className="flex-1"
             variant="outline"
           >
-            Okay
+            {recommendation === "wait"
+              ? "I'll book instead"
+              : "I'll wait instead"}
           </Button>
           <Button
             onClick={() => {
-              router.push(
-                `/select-rider?pickup=${encodeURIComponent(
-                  pickup
-                )}&destination=${encodeURIComponent(destination)}`
-              );
+              if (recommendation === "wait") {
+                handleWait();
+              } else {
+                router.push(
+                  `/select-rider?pickup=${encodeURIComponent(
+                    pickup
+                  )}&destination=${encodeURIComponent(destination)}`
+                );
+              }
             }}
             className="flex-1"
           >
-            Book with us
+            {recommendation === "wait"
+              ? "Proceed to wait"
+              : "I'll book instead"}
           </Button>
         </div>
       </DialogContent>

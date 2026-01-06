@@ -61,7 +61,7 @@ export default function RiderSelection({
 
   return (
     <MobileLayout className="flex flex-col">
-      <div className="p-4 overflow-y-auto">
+      <div className="mb-24 p-4 overflow-y-auto">
         {/* Trip Details Card */}
         <div className="p-4 border border-border rounded-2xl">
           <div className="space-y-6">
@@ -96,7 +96,7 @@ export default function RiderSelection({
             <div className="flex items-center gap-4 bg-slate-50 p-3 rounded-lg">
               <div className="flex items-center gap-2">
                 <Bike className="w-4 h-4 text-red-500" />
-                <span className="font-semibold text-sm">Moto</span>
+                <span className="font-semibold text-sm">Motor</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-xs">
                 <Clock className="w-3.5 h-3.5" />

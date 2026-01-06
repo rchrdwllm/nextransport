@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { LocationPickerModal } from "@/components/modals/location-picker-modal";
 import { mockUser } from "@/data/mockData";
 import RecommendationResultModal from "@/components/modals/recommendation-result-modal";
+import { useDecisionStore } from "@/zustand/use-decision-store";
+import Timer from "@/components/wait/timer";
+import { TrafficHeatmap } from "@/components/dashboard/traffic-heatmap";
 
 export default function DashboardPage() {
   const [pickup, setPickup] = useState("");
@@ -22,6 +25,7 @@ export default function DashboardPage() {
   );
   const [isRecommendationModalOpen, setIsRecommendationModalOpen] =
     useState(false);
+  const { decision } = useDecisionStore();
 
   useEffect(() => {
     if (recommendation) {
@@ -47,7 +51,7 @@ export default function DashboardPage() {
 
     setTimeout(() => {
       setIsRecommending(false);
-      setRecommendation("go");
+      setRecommendation("wait");
     }, 2000);
   };
 
@@ -59,23 +63,21 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-primary mx-4 mt-4 p-4 rounded-2xl text-primary-foreground"
+          className="flex justify-between items-center bg-primary mx-4 mt-4 p-4 rounded-2xl text-primary-foreground"
         >
-          <p className="opacity-80 text-sm">Welcome back,</p>
-          <h2 className="mb-3 font-bold text-xl">{mockUser.firstName}!</h2>
+          <div>
+            <p className="opacity-80 text-sm">Welcome back,</p>
+            <h2 className="font-bold text-xl">{mockUser.firstName}!</h2>
+          </div>
           <div className="flex justify-between items-center">
-            <div>
-              <p className="opacity-70 text-xs">Balance</p>
-              <p className="font-bold text-lg">
-                ₱{mockUser.balance.toFixed(2)}
-              </p>
-            </div>
             <div className="text-right">
               <p className="opacity-70 text-xs">Mobile</p>
               <p className="font-medium text-sm">{mockUser.mobile}</p>
             </div>
           </div>
         </motion.div>
+        {/* Wait timer */}
+        {decision === "wait" && <Timer />}
         {/* Traffic Heatmap */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -85,100 +87,8 @@ export default function DashboardPage() {
         >
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-semibold text-foreground">Traffic Flow</h3>
-            <span className="text-muted-foreground text-xs">
-              Historical Patterns
-            </span>
           </div>
-          <div className="relative bg-secondary rounded-2xl aspect-video overflow-hidden">
-            {/* Simulated traffic heatmap */}
-            <svg viewBox="0 0 320 180" className="w-full h-full">
-              {/* Background */}
-              <rect fill="var(--secondary)" width="320" height="180" />
-
-              {/* Simplified Metro Manila roads */}
-              <g opacity="0.4">
-                {/* EDSA - Heavy traffic */}
-                <path
-                  d="M40 10 L40 170"
-                  stroke="var(--traffic-heavy)"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                />
-                {/* C5 - Moderate */}
-                <path
-                  d="M120 10 L120 170"
-                  stroke="var(--traffic-moderate)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                />
-                {/* SLEX - Light */}
-                <path
-                  d="M200 90 L300 170"
-                  stroke="var(--traffic-light)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                />
-                {/* Horizontal roads */}
-                <path
-                  d="M10 60 L310 60"
-                  stroke="var(--traffic-moderate)"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M10 120 L310 120"
-                  stroke="var(--traffic-light)"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              </g>
-
-              {/* Labels */}
-              <text
-                x="45"
-                y="90"
-                fontSize="10"
-                fill="var(--foreground)"
-                fontWeight="600"
-              >
-                EDSA
-              </text>
-              <text
-                x="125"
-                y="90"
-                fontSize="10"
-                fill="var(--foreground)"
-                fontWeight="600"
-              >
-                C5
-              </text>
-              <text
-                x="240"
-                y="140"
-                fontSize="10"
-                fill="var(--foreground)"
-                fontWeight="600"
-              >
-                SLEX
-              </text>
-            </svg>
-
-            {/* Legend */}
-            <div className="right-3 bottom-3 absolute flex items-center gap-3 bg-card/90 backdrop-blur-sm px-3 py-2 rounded-lg text-xs">
-              <span className="flex items-center gap-1">
-                <div className="bg-traffic-light rounded-full w-3 h-3" />
-                Light
-              </span>
-              <span className="flex items-center gap-1">
-                <div className="bg-traffic-moderate rounded-full w-3 h-3" />
-                Moderate
-              </span>
-              <span className="flex items-center gap-1">
-                <div className="bg-traffic-heavy rounded-full w-3 h-3" />
-                Heavy
-              </span>
-            </div>
-          </div>
+          <TrafficHeatmap />
         </motion.div>
 
         {/* Commute Planner */}
