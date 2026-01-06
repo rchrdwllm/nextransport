@@ -77,7 +77,9 @@ export async function signUp(
           last_name: metadata.lastName,
           email: email,
           mobile_number: metadata.contactNo,
-          gender: metadata.gender.charAt(0).toUpperCase() + metadata.gender.slice(1).toLowerCase(),
+          gender:
+            metadata.gender.charAt(0).toUpperCase() +
+            metadata.gender.slice(1).toLowerCase(),
           age: parseInt(metadata.age),
         });
 
