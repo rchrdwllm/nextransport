@@ -216,7 +216,7 @@ export default function ActiveRide() {
             </Button>
           )}
 
-          {(status === "approaching" || status === "in_progress") && (
+          {status === "approaching" && status !== "in_progress" && (
             <Button
               variant="outline"
               size="lg"
@@ -280,7 +280,11 @@ export default function ActiveRide() {
       </AnimatePresence>
 
       {/* Rating Drawer */}
-      <Drawer open={showRatingModal} onOpenChange={setShowRatingModal}>
+      <Drawer
+        open={showRatingModal}
+        dismissible={false}
+        onOpenChange={setShowRatingModal}
+      >
         <DrawerContent>
           <div className="mx-auto w-full max-w-sm">
             <DrawerHeader>
