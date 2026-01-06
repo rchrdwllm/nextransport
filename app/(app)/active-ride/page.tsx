@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Phone,
-  MessageCircle,
-  X,
-  AlertTriangle,
-  Star,
-  CheckCircle,
+    Phone,
+    MessageCircle,
+    X,
+    AlertTriangle,
+    Star,
+    CheckCircle,
 } from "lucide-react";
 import { MobileLayout } from "@/components/layout/mobile-layout";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,14 @@ import { GoogleMap } from "@/components/maps/google-map";
 import { mockRiders } from "@/data/mockData";
 import { useRouter } from "@bprogress/next";
 import { useSearchParams } from "next/navigation";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+    DrawerFooter,
+} from "@/components/ui/drawer";
 
 type RideStatus = "approaching" | "arrived" | "in_progress" | "completed";
 
@@ -271,37 +279,26 @@ export default function ActiveRide() {
         )}
       </AnimatePresence>
 
-      {/* Rating Modal */}
-      <AnimatePresence>
-        {showRatingModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="z-50 fixed inset-0 flex justify-center items-end bg-background/80 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25 }}
-              className="bg-card p-6 rounded-t-3xl w-full max-w-lg"
-            >
-              <div className="mb-6 text-center">
-                <div className="flex justify-center items-center bg-traffic-light/20 mx-auto mb-4 rounded-full w-20 h-20">
-                  <CheckCircle className="w-10 h-10 text-traffic-light" />
-                </div>
-                <h3 className="font-bold text-foreground text-xl">
-                  You've Arrived! 🎉
-                </h3>
-                <p className="mt-1 text-muted-foreground text-sm">
-                  {pickup} → {destination}
-                </p>
+      {/* Rating Drawer */}
+      <Drawer open={showRatingModal} onOpenChange={setShowRatingModal}>
+        <DrawerContent>
+          <div className="mx-auto w-full max-w-sm">
+            <DrawerHeader>
+              <div className="flex justify-center items-center bg-green-100 mx-auto mb-4 rounded-full w-20 h-20">
+                <CheckCircle className="w-10 h-10 text-green-600" />
               </div>
+              <DrawerTitle className="text-center text-xl">
+                You've Arrived! 🎉
+              </DrawerTitle>
+              <DrawerDescription className="text-center">
+                {pickup} → {destination}
+              </DrawerDescription>
+            </DrawerHeader>
 
+            <div className="p-4 pb-0">
               {/* App Rating */}
               <div className="mb-6">
-                <p className="mb-2 font-medium text-foreground text-sm">
+                <p className="mb-2 font-medium text-foreground text-sm text-center">
                   Rate NexTransport
                 </p>
                 <div className="flex justify-center gap-2">
@@ -309,13 +306,13 @@ export default function ActiveRide() {
                     <button
                       key={star}
                       onClick={() => setAppRating(star)}
-                      className="p-1"
+                      className="p-1 focus:outline-none hover:scale-110 transition-transform"
                     >
                       <Star
                         className={`w-8 h-8 transition-colors ${
                           star <= appRating
-                            ? "text-accent fill-accent"
-                            : "text-muted-foreground"
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-muted-foreground/30"
                         }`}
                       />
                     </button>
@@ -325,7 +322,7 @@ export default function ActiveRide() {
 
               {/* Rider Rating */}
               <div className="mb-6">
-                <p className="mb-2 font-medium text-foreground text-sm">
+                <p className="mb-2 font-medium text-foreground text-sm text-center">
                   Rate {rider.name}
                 </p>
                 <div className="flex justify-center gap-2">
@@ -333,30 +330,33 @@ export default function ActiveRide() {
                     <button
                       key={star}
                       onClick={() => setRiderRating(star)}
-                      className="p-1"
+                      className="p-1 focus:outline-none hover:scale-110 transition-transform"
                     >
                       <Star
                         className={`w-8 h-8 transition-colors ${
                           star <= riderRating
-                            ? "text-primary fill-primary"
-                            : "text-muted-foreground"
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-muted-foreground/30"
                         }`}
                       />
                     </button>
                   ))}
                 </div>
               </div>
+            </div>
+
+            <DrawerFooter>
               <Button
                 size="lg"
-                className="safe-bottom w-full"
+                className="w-full"
                 onClick={handleSubmitRating}
               >
                 Submit & Return Home
               </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </DrawerFooter>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </MobileLayout>
   );
 }

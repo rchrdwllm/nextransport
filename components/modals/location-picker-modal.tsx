@@ -212,7 +212,6 @@ export function LocationPickerModal({
   };
 
   const handleUseCurrentLocation = () => {
-    const setLocation = useLocationStore((state) => state.setLocation);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
